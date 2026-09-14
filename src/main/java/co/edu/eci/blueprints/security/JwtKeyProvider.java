@@ -19,6 +19,11 @@ public class JwtKeyProvider {
         }
     }
 
-    public PrivateKey privateKey() { return keyPair.getPrivate(); }
-    public PublicKey publicKey() { return keyPair.getPublic(); }
+    public PrivateKey privateKey() {
+        return keyPair.getPrivate();
+    }
+
+    public PublicKey publicKey() {
+        return keyPair.getPublic();
+    }
 }

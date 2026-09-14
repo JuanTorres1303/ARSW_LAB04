@@ -12,9 +12,8 @@ public class InMemoryUserService {
     public InMemoryUserService(PasswordEncoder encoder) {
         this.encoder = encoder;
         this.users = Map.of(
-            "student", encoder.encode("student123"),
-            "assistant", encoder.encode("assistant123")
-        );
+                "student", encoder.encode("student123"),
+                "assistant", encoder.encode("assistant123"));
     }
 
     public boolean isValid(String username, String rawPassword) {
