@@ -8,19 +8,19 @@
   2. Valeria Bermudez Aguilar 
 
 ### Punto 1. 
-![alt text](../ARSW_LAB04/src/main/resources/image.png)
+![alt text](src/main/resources/image.png)
 Como podemos ver en la imagen anterior la pagina de la api esta protegida por el Security ya que al hacerle una peticion GET al url http://localhost:8080/api/blueprints sin autenticacion recibimos un error 401 Unauthorize.
 
 Esto por que pasa ya que tiene que pasar primero por una auntentificacion por lo que el unico URL publico es http://localhost:8080/auth/login. que pues permite que los usuarios se autentiquen y reciban un token, el cual se debe enviar en el header de cada peticion. Tambien la URL /actuator/health esta para ver la disponibilidad de la API. y pues el SWAGGER para ver su documentacion. Esto se ve reflejado tambien en la imagen anterior por lo que ahora vamos a ver que pasa cuando hacemos el post y ya estamos autenticados.
 
-![alt text](../ARSW_LAB04/src/main/resources/image2.png)
-![alt text](../ARSW_LAB04/src/main/resources/image3.png)
+![alt text](src/main/resources/image2.png)
+![alt text](src/main/resources/image3.png)
 Como podemos ver ya con el token obtenido anterior mente ya podemos verficar que si podemos acceder a la API.
 
 ### Punto 2.
 Para explorar el flujo del login y la emision del token nos dirigimos a la clase AuthController.java y podemos ver que hay un metodo @PostMapping que es el que nos ayuda a ver los claims que se le asignan al token, el emisor del token, la fecha de expiracion por lo que con una herramiento y el access_token podemos verificar si estan o no los claims como podemos ver en la siguiente imagen con la herrmienta de jwt.io.
 
-![alt text](../ARSW_LAB04/src/main/resources/image4.png)
+![alt text](src/main/resources/image4.png)
 
 Vemos que si se cumple los claims y que son cada uno 
 1. iss: Quien emitio el token
@@ -38,33 +38,33 @@ Profundizando un poco mas en como esta compuesto el access_token vemos que hay t
 ### Punto 3. 
 Ahora lo que vamos a manejar los permisos dentro de la misma api o los scopes de los usuarios ya que no todos pueden ver o modificar los planos en este caso de los edificios para este ejemplo en el lab por lo que primero lo que hacemos es esto.
 
-![alt text](../ARSW_LAB04/src/main/resources/image5.png)
+![alt text](src/main/resources/image5.png)
 
 una condicion donde va a verificar si tiene permiso o no para acceder al endpoint en este caso el estudiante solo va a poder ver o hacer un GET y el assistant va a poder ver y modificar o hacer un GET o POST O PUT O DELETE. ya que asi se cumple pues el caso de este lab. 
 
 Ahora modificamos el endpoint para que dependiendo el usuario se puedan hacer estas peticiones y nos responda el servidor. 
 
-![alt text](../ARSW_LAB04/src/main/resources/image6.png)
+![alt text](src/main/resources/image6.png)
 
 Como podemos ver en la imagen anterior ahora podemos acceder a la API y podemos ver los planos que tiene asociado el author por lo que ahora podemos ver que si funcionan los permisos dentro de la API. 
 
 Ahora vamos a ver que si funciona con los endpoints de GET y POST. 
 
-![alt text](../ARSW_LAB04/src/main/resources/image7.png)
+![alt text](src/main/resources/image7.png)
 
-![alt text](../ARSW_LAB04/src/main/resources/image8.png)
+![alt text](src/main/resources/image8.png)
 
 vimos para el get para el student esta bien pero:
 
-![alt text](../ARSW_LAB04/src/main/resources/image9.png)
+![alt text](src/main/resources/image9.png)
 
 Cuando hacemos el post da un 403 por que el student no tiene permiso para hacer un post de un blueprint, por lo que ahora vamos a ver que pasa cuando el assistant intenta hacer un post de un blueprint. 
 
-![alt text](../ARSW_LAB04/src/main/resources/image10.png)
+![alt text](src/main/resources/image10.png)
 
 Aca vemos que nos logueamos como assistant 
 
-![alt text](../ARSW_LAB04/src/main/resources/image11.png)
+![alt text](src/main/resources/image11.png)
 
 y si deja crear el blueprint por que el assistant si tiene permiso para hacer un post de un blueprint.
 
