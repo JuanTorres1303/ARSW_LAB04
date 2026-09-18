@@ -2,6 +2,10 @@ package co.edu.eci.blueprints.auth;
 
 import co.edu.eci.blueprints.security.InMemoryUserService;
 import co.edu.eci.blueprints.security.RsaKeyProperties;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +15,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "Auth", description = "Autenticación y emisión de tokens JWT")
 public class AuthController {
 
     private final JwtEncoder encoder;
@@ -30,6 +35,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "Iniciar sesión", description = "Valida las credenciales del usuario y, si son correctas, devuelve un token JWT firmado con el scope correspondiente.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Login exitoso, token emitido"),
+            @ApiResponse(responseCode = "401", description = "Credenciales inválidas")
+    })
     public ResponseEntity<?> login(@RequestBody LoginRequest req) {
         if (!userService.isValid(req.username(), req.password())) {
             return ResponseEntity.status(401).body(Map.of("error", "invalid_credentials"));

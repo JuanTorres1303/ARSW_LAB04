@@ -9,13 +9,13 @@
 
 ### Punto 1. 
 ![alt text](src/main/resources/image.png)
-Como podemos ver en la imagen anterior la pagina de la api esta protegida por el Security ya que al hacerle una peticion GET al url http://localhost:8080/api/blueprints sin autenticacion recibimos un error 401 Unauthorize.
+Como podemos ver en la imagen anterior la página de la api está protegida por el Security ya que al hacerle una peticion GET al url http://localhost:8080/api/blueprints sin autenticacion recibimos un error 401 Unauthorize.
 
-Esto por que pasa ya que tiene que pasar primero por una auntentificacion por lo que el unico URL publico es http://localhost:8080/auth/login. que pues permite que los usuarios se autentiquen y reciban un token, el cual se debe enviar en el header de cada peticion. Tambien la URL /actuator/health esta para ver la disponibilidad de la API. y pues el SWAGGER para ver su documentacion. Esto se ve reflejado tambien en la imagen anterior por lo que ahora vamos a ver que pasa cuando hacemos el post y ya estamos autenticados.
+Esto porque pasa, ya que tiene que pasar primero por una auntentificacion por lo que el unico URL publico es http://localhost:8080/auth/login. que pues permite que los usuarios se autentiquen y reciban un token, el cual se debe enviar en el header de cada peticion. Tambien la URL /actuator/health está para ver la disponibilidad de la API.Del  SWAGGER para ver su documentacion. Esto se ve reflejado tambien en la imagen anterior por lo que ahora vamos a ver que pasa cuando hacemos el post y ya estamos autenticados.
 
 ![alt text](src/main/resources/image2.png)
 ![alt text](src/main/resources/image3.png)
-Como podemos ver ya con el token obtenido anterior mente ya podemos verficar que si podemos acceder a la API.
+Como podemos ver ya con el token obtenido anteriormente, ya podemos verficar que si podemos acceder a la API.
 
 ### Punto 2.
 Para explorar el flujo del login y la emision del token nos dirigimos a la clase AuthController.java y podemos ver que hay un metodo @PostMapping que es el que nos ayuda a ver los claims que se le asignan al token, el emisor del token, la fecha de expiracion por lo que con una herramiento y el access_token podemos verificar si estan o no los claims como podemos ver en la siguiente imagen con la herrmienta de jwt.io.
@@ -29,18 +29,18 @@ Vemos que si se cumple los claims y que son cada uno
 4. exp: Fecha y hora de expiracion 
 5. scope: permisos del token.
 
-Profundizando un poco mas en como esta compuesto el access_token vemos que hay tres partes una en rojo o naranja, una en morado y otra en verde que significa cada una de estas partes:
+Profundizando un poco más en como está compuesto el access_token vemos que hay tres partes una en rojo o naranja, una en morado y otra en verde que significa cada una de estas partes:
 
 1. Define el algoritmo de encriptacion para el token en este caso algoritmo asimetrco RSA 
 2. Son los datos del claim que son los datos concretos de el token como tal 
 3. Es la firma digital del token y se utiliza para verificar que el token no ha sido manipulado.
 
 ### Punto 3. 
-Ahora lo que vamos a manejar los permisos dentro de la misma api o los scopes de los usuarios ya que no todos pueden ver o modificar los planos en este caso de los edificios para este ejemplo en el lab por lo que primero lo que hacemos es esto.
+Ahora lo que vamos a manejar los permisos dentro de la misma api o los scopes de los usuarios, ya que no todos pueden ver o modificar los planos en este caso de los edificios para este ejemplo en el lab por lo que primero lo que hacemos es esto.
 
 ![alt text](src/main/resources/image5.png)
 
-una condicion donde va a verificar si tiene permiso o no para acceder al endpoint en este caso el estudiante solo va a poder ver o hacer un GET y el assistant va a poder ver y modificar o hacer un GET o POST O PUT O DELETE. ya que asi se cumple pues el caso de este lab. 
+una condicion donde va a verificar si tiene permiso o no para acceder al endpoint en este caso el estudiante solo va a poder ver o hacer un GET y el assistant va a poder ver y modificar o hacer un GET o POST O PUT O DELETE, ya que asi se cumple  el caso de este lab. 
 
 Ahora modificamos el endpoint para que dependiendo el usuario se puedan hacer estas peticiones y nos responda el servidor. 
 
@@ -54,11 +54,11 @@ Ahora vamos a ver que si funciona con los endpoints de GET y POST.
 
 ![alt text](src/main/resources/image8.png)
 
-vimos para el get para el student esta bien pero:
+vimos para el get para el student está bien pero:
 
 ![alt text](src/main/resources/image9.png)
 
-Cuando hacemos el post da un 403 por que el student no tiene permiso para hacer un post de un blueprint, por lo que ahora vamos a ver que pasa cuando el assistant intenta hacer un post de un blueprint. 
+Cuando hacemos el post da un 403 porque el student no tiene permiso para hacer un post de un blueprint, por lo que ahora vamos a ver que pasa cuando el assistant intenta hacer un post de un blueprint. 
 
 ![alt text](src/main/resources/image10.png)
 
@@ -66,8 +66,35 @@ Aca vemos que nos logueamos como assistant
 
 ![alt text](src/main/resources/image11.png)
 
-y si deja crear el blueprint por que el assistant si tiene permiso para hacer un post de un blueprint.
+y si deja crear el blueprint porque el assistant si tiene permiso para hacer un post de un blueprint.
 
+### Punto 4.
+Para observar el efecto del tiempo de expiración del token modificamos en application.yml la propiedad token-ttl-seconds, bajándola de 3600 a 30, de modo que el token quedara vigente solo por 30 segundos y pudiéramos ver el efecto sin esperar una hora.
+
+Hicimos login y, de inmediato, usamos el access_token recibido para consultar el endpoint GET que trae los planos por autor. Como se ve en la imagen, con el token recién emitido la petición responde 200 y trae el plano del autor consultado.
+
+![alt text](src/main/resources/image16.png)
+
+Después, sin volver a autenticarnos, dejamos pasar unos 35 segundos, más de los 30 que dura el token, y repetimos exactamente la misma petición con el mismo token. Esta vez el servidor respondió 401, y en el header WWW-Authenticate viene el detalle indicando que el JWT ya expiró, confirmando que Spring Security sí está validando la expiración del token y no solo la firma.
+
+![alt text](src/main/resources/image17.png)
+
+### Punto 5.
+Para documentar los endpoints de autenticación y de negocio agregamos anotaciones de OpenAPI en AuthController y BlueprintController. Con esto, en Swagger UI ahora aparecen dos grupos bien diferenciados, Auth y Blueprints, cada uno con sus operaciones documentadas.
+
+![alt text](src/main/resources/image12.png)
+
+En el endpoint de login documentamos que valida las credenciales y devuelve el token, con las respuestas posibles de login exitoso y credenciales inválidas.
+
+![alt text](src/main/resources/image13.png)
+
+En el endpoint de creación de planos documentamos que requiere el scope de escritura, con las respuestas de plano creado, no autenticado y autenticado pero sin el scope necesario.
+
+![alt text](src/main/resources/image14.png)
+
+Y en el endpoint de consulta de planos por autor documentamos que requiere el scope de lectura, también con sus respuestas correspondientes de éxito, no autenticado y sin permiso.
+
+![alt text](src/main/resources/image15.png)
 ---
 
 #### LAB04 Arquitecturas de Software
